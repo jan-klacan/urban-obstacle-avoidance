@@ -1,0 +1,5 @@
+numpy
+matplotlib
+gymnasium
+shimmy
+stable-baselines3

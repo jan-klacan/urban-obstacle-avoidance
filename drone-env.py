@@ -3,14 +3,17 @@ import matplotlib.pyplot as plt
 import gymnasium as gym
 from gymnasium import spaces
 
+
 class DroneEnv(gym.Env):
     def __init__(self):
         super(DroneEnv, self).__init__()
+
 
         # ACTION SPACE - WHAT THE DRONE CAN DO
         # - use spaces.Box to represent a continous velocity vector (2D)
         # - each component a real value between -1 and 1
         self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
+
 
         # OBSERVATION SPACE - WHAT THE DRONE CAN SEE
         # - use spaces.Box to represent a 12D vector
@@ -25,9 +28,11 @@ class DroneEnv(gym.Env):
             dtype=np.float32
         )
 
+
         self.state = None
         self.max_steps = 1000
         self.current_step = 0
+
 
         def reset(self, seed=None, options=None):
             """
@@ -36,6 +41,7 @@ class DroneEnv(gym.Env):
             1. Initialize the state for a fresh episode
             2. Return the initial observation
             """
+
             super().reset(seed=seed)
 
             # RESET INTERNAL STATE
@@ -55,3 +61,18 @@ class DroneEnv(gym.Env):
             info = {} # empty dictionary for extra debug data (required by API)
 
             return observation, info
+        
+
+        def _get_obs(self):
+            """
+            The "camera" of the environment.
+            Purpose: convert the internal state variables into the 12D observation vector.
+            """
+            
+            # Default: the drone sees no obstacle within its max range (1.0) in any of the 8 directions
+            lidar_readings = np.full(8, 1.0)
+
+            # Build the first observation vector
+            obs = np.concatenate((self.drone_pos, self.target_pos, lidar_readings))
+
+            return obs.astype(np.float32)

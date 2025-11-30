@@ -24,3 +24,34 @@ class DroneEnv(gym.Env):
             shape= (12,),
             dtype=np.float32
         )
+
+        self.state = None
+        self.max_steps = 1000
+        self.current_step = 0
+
+        def reset(self, seed=None, options=None):
+            """
+            Function acting as "new game" button for the simulation.
+            Purpose:
+            1. Initialize the state for a fresh episode
+            2. Return the initial observation
+            """
+            super().reset(seed=seed)
+
+            # RESET INTERNAL STATE
+            self.current_step = 0
+
+            # RANDOMIZE DRONE AND TARGET X-Y POSITIONS FOR A NEW EPISODE
+            self.drone_pos = np.random.rand(2)
+            self.target_pos = np.random.rand(2)
+
+            # ENFORE SPAWNING-RELATED CONSTRAINTS
+            # - if accidentally spawns too close to the target, re-roll the target's x-y position
+            while np.linalg.norm(self.drone_pos - self.target_pos) < 0.2:
+                self.target_pos = np.random.rand(2)
+            
+            # GENERATE AND RETURN INITIAL OBSERVATION
+            observation = self.__get_obs()
+            info = {} # empty dictionary for extra debug data (required by API)
+
+            return observation, info

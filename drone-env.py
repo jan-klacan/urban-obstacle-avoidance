@@ -118,3 +118,16 @@ class DroneEnv(gym.Env):
             info = {} # empty dictionary for extra debug data (required by API)
 
             return obs, reward, terminated, truncated, info
+        
+
+        def render(self):
+            """
+            Visualization function.
+            """
+
+            plt.scatter(self.drone_pos[0], self.drone_pos[1], c="blue", label="Drone")
+            plt.scatter(self.target_pos[0], self.target_pos[1], c="green", label="Target")
+            plt.xlim(0, 1)
+            plt.ylim(0, 1)
+            plt.pause(0.01)
+            plt.clf()
